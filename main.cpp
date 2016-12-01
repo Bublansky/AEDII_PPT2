@@ -1,17 +1,61 @@
 #include<iostream>
 #include<math.h>
 #include<stdlib.h>
-
+#include<vector>
 using namespace std;
 
 class Vertice
 {
 	private:
-
 	public:
 		int numero;
-		int peso;
+		float peso;
 };
+
+class LinhaDaMatrix {
+public:
+//std::vector<Vertice>;	
+};
+
+class Grafo{
+public:
+std::vector<vector<Vertice> > MatrixDeAdjacencia;	
+// essa matriz e suas funções são feitas para auxiliar no desenvolvimento do algoritimo de PRim
+std::vector<vector<Vertice> > MatrixDeAdjacenciaDoPrim;
+Grafo(int NumeroDeVertices);
+void InserirPeso(int inicio,int fim, float peso);
+void InseirPesoPrim(int inicio,int fim ,float peso);
+float GetPesoMatrixAdjacencia(int inicio,int fim);
+float GetPesoMatrixAdjacenciaPrim(int inicio,int fim);
+};
+Grafo::Grafo(int n){
+	for (int i=0;i<n;i++){
+		std::vector<Vertice> vector;
+		this->MatrixDeAdjacencia.push_back(vector);
+		this->MatrixDeAdjacenciaDoPrim.push_back(vector);
+		for(int j=0;j<n;j++){
+			Vertice v;
+			v.numero=j;
+			v.peso=0;
+			this->MatrixDeAdjacencia[i].push_back(v);
+			this->MatrixDeAdjacenciaDoPrim[i].push_back(v);
+		}
+	}
+}
+void Grafo::InserirPeso(int origem,int destino,float peso){
+	this->MatrixDeAdjacencia[origem][destino].peso = peso;
+}
+void Grafo::InseirPesoPrim(int inicio,int fim ,float peso){
+	this->MatrixDeAdjacenciaDoPrim[inicio][fim].peso = peso;
+}
+float Grafo::GetPesoMatrixAdjacencia(int inicio,int fim){
+	float aux = this->MatrixDeAdjacencia[inicio][fim].peso;
+	return aux;
+}
+float Grafo::GetPesoMatrixAdjacenciaPrim(int inicio,int fim){
+	float aux = this->MatrixDeAdjacenciaDoPrim[inicio][fim].peso;
+	return aux;
+}
 class heap_min_priority_queue
 {
 	private:
@@ -176,8 +220,6 @@ int heap_min_priority_queue::Right(int i)
 {
 	return 2 * i + 1;
 };
-
-
 int main()
 {
 	int tt;
@@ -207,6 +249,11 @@ int main()
 		vertice = fila.Extract_min();
 		cout << vertice.numero << ", " << vertice.peso << endl;
 	}
+
+
+Grafo graph(10);
+graph.InserirPeso(5,6,22.5);
+cout<< graph.GetPesoMatrixAdjacencia(5,6);
 
 	//para segurar o console
 	cin >> tt;
