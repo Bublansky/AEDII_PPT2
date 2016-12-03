@@ -12,10 +12,6 @@ class Vertice
 		float peso;
 };
 
-class LinhaDaMatrix {
-public:
-//std::vector<Vertice>;	
-};
 
 class Grafo{
 public:
@@ -27,6 +23,9 @@ void InserirPeso(int inicio,int fim, float peso);
 void InseirPesoPrim(int inicio,int fim ,float peso);
 float GetPesoMatrixAdjacencia(int inicio,int fim);
 float GetPesoMatrixAdjacenciaPrim(int inicio,int fim);
+Vertice GetVerticeMatrixAdjacencia(int inicio,int fim);
+Vertice GetVerticeMatrixAdjacenciaDoPrim(int inicio,int fim);
+
 };
 Grafo::Grafo(int n){
 	for (int i=0;i<n;i++){
@@ -44,9 +43,12 @@ Grafo::Grafo(int n){
 }
 void Grafo::InserirPeso(int origem,int destino,float peso){
 	this->MatrixDeAdjacencia[origem][destino].peso = peso;
+	this->MatrixDeAdjacencia[destino][origem].peso = peso;
+
 }
 void Grafo::InseirPesoPrim(int inicio,int fim ,float peso){
 	this->MatrixDeAdjacenciaDoPrim[inicio][fim].peso = peso;
+	this->MatrixDeAdjacenciaDoPrim[fim][inicio].peso = peso;
 }
 float Grafo::GetPesoMatrixAdjacencia(int inicio,int fim){
 	float aux = this->MatrixDeAdjacencia[inicio][fim].peso;
@@ -55,6 +57,13 @@ float Grafo::GetPesoMatrixAdjacencia(int inicio,int fim){
 float Grafo::GetPesoMatrixAdjacenciaPrim(int inicio,int fim){
 	float aux = this->MatrixDeAdjacenciaDoPrim[inicio][fim].peso;
 	return aux;
+}
+
+Vertice Grafo::GetVerticeMatrixAdjacencia(int u, int v){
+	return this->MatrixDeAdjacencia[u][v];
+}
+Vertice Grafo::GetVerticeMatrixAdjacenciaDoPrim(int u, int v){
+return this->MatrixDeAdjacenciaDoPrim[u][v];
 }
 class heap_min_priority_queue
 {
@@ -252,8 +261,12 @@ int main()
 
 
 Grafo graph(10);
+Vertice v1,v2;
 graph.InserirPeso(5,6,22.5);
-cout<< graph.GetPesoMatrixAdjacencia(5,6);
+v1 = graph.GetVerticeMatrixAdjacencia(5,6);
+v2=graph.GetVerticeMatrixAdjacencia(6,5);
+cout<<"O peso de v1 é: " <<v1.peso<< "O numero de v1 é :"<< v1.numero<<"\n";
+cout<<"O peso de v2 é: " <<v2.peso<< "O numero de v2 é :"<< v2.numero;
 
 	//para segurar o console
 	cin >> tt;
