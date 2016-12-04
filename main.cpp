@@ -6,18 +6,18 @@ using namespace std;
 
 class Vertice
 {
-	private:
-		int numero, antecessor;
-		float peso, chave;
-	public:
-		int getNumero();
-		float getPeso();
-		int getAntecessor();
-		float getChave();
-		void setNumero(int);
-		void setPeso(float);
-		void setAntecessor(int);
-		void setChave(float);
+private:
+	int numero, antecessor;
+	float peso, chave;
+public:
+	int getNumero();
+	float getPeso();
+	int getAntecessor();
+	float getChave();
+	void setNumero(int);
+	void setPeso(float);
+	void setAntecessor(int);
+	void setChave(float);
 };
 int Vertice::getNumero()
 {
@@ -58,7 +58,7 @@ class heap_min_priority_queue
 private:
 	int heap_size;
 	int infinite;
-	Vertice Queue[51];
+	Vertice Queue[100];
 	int Parent(int i);
 	int Left(int i);
 	int Right(int i);
@@ -70,10 +70,10 @@ public:
 	void Insert(Vertice);
 	Vertice Minimum();
 	Vertice Extract_min();
-	bool Decrease_key(int i, int key);
-	void Increase_Priority(int value, int key);
-	bool isEmpty();
-	bool isQueued(Vertice);
+	bool Decrease_key(int i, float key);
+	void Increase_Priority(int value, float key);
+	int isEmpty();
+	int isQueued(Vertice);
 };
 
 class Grafo {
@@ -137,55 +137,55 @@ Vertice Grafo::GetVerticeMatrixAdjacenciaDoPrim(int u, int v) {
 	return this->MatrixDeAdjacenciaDoPrim[u][v];
 }
 
-void Grafo::Prim(Grafo grafo, int raiz, int ordem){
+void Grafo::Prim(Grafo grafo, int raiz, int ordem) {
 
 	heap_min_priority_queue Q;
-	Vertice v,u;
-	int antaux=0,l=0;
+	Vertice v, u;
+	int antaux = 0, l = 0, i;
 	vector<int>parada;
-	float peso=0, pesoaux=99999;
-	for(int i=0;i<ordem;i++){
-		MatrixDeAdjacencia[i][raiz-1].setChave(0);
+	float peso = 0, pesoaux = 99999;
+	for (i = 0; i<ordem; i++) {
+		MatrixDeAdjacencia[i][raiz - 1].setChave(0);
 	}
-	for(int i;i<ordem;i++){
+	for (i = 0; i<ordem; i++) {
 		Q.Insert(MatrixDeAdjacencia[0][i]);
 	}
 
-	while(Q.isEmpty()!=true){
-		u=Q.Extract_min();
-		for(int i=0;i<ordem;i++){
-			v=grafo.GetVerticeMatrixAdjacencia(u.getNumero(),i);
-			if((Q.isQueued(v)==true)&&(this->MatrixDeAdjacencia[u.getNumero()][v.getNumero()].getPeso()<v.getChave())){
+	while (Q.isEmpty() != 1) {
+		u = Q.Extract_min();
+		for (i = 0; i<ordem; i++) {
+			v = grafo.GetVerticeMatrixAdjacencia(u.getNumero(), i);
+			if ((Q.isQueued(v) == 1) && (this->MatrixDeAdjacencia[u.getNumero()][v.getNumero()].getPeso()<v.getChave())) {
 				v.setAntecessor(u.getNumero());
 				v.setChave(this->MatrixDeAdjacencia[u.getNumero()][v.getNumero()].getPeso());
-				peso+=v.getChave();
+				peso += v.getChave();
 			}
 		}
 
 
 	}
-	cout<<"peso: "<<peso<<endl;
+	cout << "peso: " << peso << endl;
 
 }
 
-bool heap_min_priority_queue::isQueued(Vertice v)
+int heap_min_priority_queue::isQueued(Vertice v)
 {
-	for (int i = 1 ; i <= heap_size ; i++)
+	for (int i = 1; i <= heap_size; i++)
 	{
 		if (Queue[i].getNumero() == v.getNumero())
 		{
-			return true;
+			return 1;
 		}
 	}
-	return false;
+	return 0;
 }
-bool heap_min_priority_queue::isEmpty()
+int heap_min_priority_queue::isEmpty()
 {
 	if (heap_size == 0)
 	{
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 }
 heap_min_priority_queue::heap_min_priority_queue()
 {
@@ -208,7 +208,7 @@ void heap_min_priority_queue::Min_heapify(int i)
 	int smallest;
 	Vertice aux;
 
-	if (l <= heap_size && Queue[i].getPeso() > Queue[l].getPeso())
+	if (l <= heap_size && Queue[i].getChave() > Queue[l].getChave())
 	{
 		smallest = l;
 	}
@@ -216,7 +216,7 @@ void heap_min_priority_queue::Min_heapify(int i)
 	{
 		smallest = i;
 	}
-	if (r <= heap_size && Queue[r].getPeso() < Queue[smallest].getPeso())
+	if (r <= heap_size && Queue[r].getChave() < Queue[smallest].getChave())
 	{
 		smallest = r;
 	}
@@ -238,7 +238,7 @@ void heap_min_priority_queue::Insert(Vertice vertice)
 	//indice 0 é a key
 	Queue[heap_size] = vertice;
 
-	Decrease_key(heap_size, vertice.getPeso());
+	Decrease_key(heap_size, vertice.getChave());
 	Min_heapify(heap_size);
 	//build_min_heap();
 };
@@ -249,7 +249,7 @@ Vertice heap_min_priority_queue::Minimum()
 Vertice heap_min_priority_queue::Extract_min()
 {
 	Vertice min;
-	min.setPeso(-1);
+	min.setChave(-1);
 	if (heap_size < 1)
 	{
 		return min;
@@ -266,18 +266,18 @@ Vertice heap_min_priority_queue::Extract_min()
 
 	return min;
 };
-bool heap_min_priority_queue::Decrease_key(int i, int key)
+bool heap_min_priority_queue::Decrease_key(int i, float key)
 {
 	Vertice aux;
 
-	if (key > Queue[i].getPeso())
+	if (key > Queue[i].getChave())
 	{
 		return false;
 	}
 
-	Queue[i].setPeso(key);
+	Queue[i].setChave(key);
 
-	while (i > 1 && Queue[Parent(i)].getPeso() > Queue[i].getPeso())
+	while (i > 1 && Queue[Parent(i)].getChave() > Queue[i].getChave())
 	{
 		//troca de chaves
 		aux = Queue[i];
@@ -288,7 +288,7 @@ bool heap_min_priority_queue::Decrease_key(int i, int key)
 	}
 	return true;
 };
-void heap_min_priority_queue::Increase_Priority(int value, int key)
+void heap_min_priority_queue::Increase_Priority(int value, float key)
 {
 	Vertice aux;
 
@@ -296,14 +296,14 @@ void heap_min_priority_queue::Increase_Priority(int value, int key)
 	{
 		if (value == Queue[i].getNumero())
 		{
-			if (key > Queue[i].getPeso())
+			if (key > Queue[i].getChave())
 			{
 				return;
 			}
 
 			Queue[i].setPeso(key);
 
-			while (i > 1 && Queue[Parent(i)].getPeso() > Queue[i].getPeso())
+			while (i > 1 && Queue[Parent(i)].getChave() > Queue[i].getChave())
 			{
 				//troca de chaves
 				aux = Queue[i];
@@ -333,19 +333,37 @@ int heap_min_priority_queue::Right(int i)
 };
 int main()
 {
+	/*
 	int ordem, tamanho, raiz, v1, v2;
 	float peso;
-	cout<<"Ordem e tamanho"<<endl;
-	cin>>ordem>>tamanho;
+	cout << "Ordem e tamanho" << endl;
+	cin >> ordem >> tamanho;
 	Grafo graph(ordem);
-	for(int i=0;i<tamanho;i++){
-		cout<<"v1, v2, peso: "<<i<<endl;
-		cin>>v1>>v2>>peso;
-		graph.InserirPeso(v1-1,v2-1,peso);
+	for (int i = 0; i<tamanho; i++) {
+		cout << "v1, v2, peso: " << i << endl;
+		cin >> v1 >> v2 >> peso;
+		graph.InserirPeso(v1 - 1, v2 - 1, peso);
 	}
-	cout<<"raiz"<<endl;
-	cin>>raiz;
+	cout << "raiz" << endl;
+	cin >> raiz;
 	graph.Prim(graph, raiz, ordem);
-
+	*/
+	heap_min_priority_queue fila;
+	Vertice v1, v2, v3, u;
+	v1.setNumero(1);
+	v1.setChave(2);
+	v2.setNumero(2);
+	v2.setChave(1);
+	v3.setNumero(3);
+	v3.setChave(0);
+	fila.Insert(v1);
+	fila.Insert(v2);
+	fila.Insert(v3);
+	u = fila.Extract_min();
+	cout << "extraiu " << u.getNumero() << endl;
+	u = fila.Extract_min();
+	cout << "extraiu " << u.getNumero() << endl;
+	u = fila.Extract_min();
+	cout << "extraiu " << u.getNumero() << endl;
 	return 0;
 }
