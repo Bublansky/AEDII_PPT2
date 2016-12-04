@@ -7,13 +7,17 @@ using namespace std;
 class Vertice
 {
 	private:
-		int numero;
-		float peso;
+		int numero, antecessor;
+		float peso, chave;
 	public:
 		int getNumero();
 		float getPeso();
+		int getAntecessor();
+		float getChave();
 		void setNumero(int);
 		void setPeso(float);
+		void setAntecessor(int);
+		void setChave(float);
 };
 int Vertice::getNumero()
 {
@@ -23,20 +27,61 @@ float Vertice::getPeso()
 {
 	return peso;
 }
+int Vertice::getAntecessor()
+{
+	return antecessor;
+}
+float Vertice::getChave()
+{
+	return chave;
+}
 void Vertice::setNumero(int num)
 {
 	this->numero = num;
+}
+void Vertice::setChave(float c)
+{
+	this->chave = c;
+}
+
+void Vertice::setAntecessor(int ant)
+{
+	this->antecessor = ant;
 }
 void Vertice::setPeso(float p)
 {
 	this->peso = p;
 }
 
+class heap_min_priority_queue
+{
+private:
+	int heap_size;
+	int infinite;
+	Vertice Queue[51];
+	int Parent(int i);
+	int Left(int i);
+	int Right(int i);
+
+public:
+	heap_min_priority_queue();
+	void build_min_heap();
+	void Min_heapify(int i);
+	void Insert(Vertice);
+	Vertice Minimum();
+	Vertice Extract_min();
+	bool Decrease_key(int i, int key);
+	void Increase_Priority(int value, int key);
+	bool isEmpty();
+	bool isQueued(Vertice);
+};
 
 class Grafo {
+
 public:
+
 	std::vector<vector<Vertice> > MatrixDeAdjacencia;
-	// essa matriz e suas funções são feitas para auxiliar no desenvolvimento do algoritimo de PRim
+	// essa matriz e suas funÃ§Ãµes sÃ£o feitas para auxiliar no desenvolvimento do algoritimo de PRim
 	std::vector<vector<Vertice> > MatrixDeAdjacenciaDoPrim;
 	Grafo(int NumeroDeVertices);
 	void InserirPeso(int inicio, int fim, float peso);
@@ -45,8 +90,10 @@ public:
 	float GetPesoMatrixAdjacenciaPrim(int inicio, int fim);
 	Vertice GetVerticeMatrixAdjacencia(int inicio, int fim);
 	Vertice GetVerticeMatrixAdjacenciaDoPrim(int inicio, int fim);
+	void Prim(Grafo grafo, int raiz, int ordem);
 
 };
+
 Grafo::Grafo(int n) {
 	for (int i = 0; i<n; i++) {
 		std::vector<Vertice> vector;
@@ -55,7 +102,9 @@ Grafo::Grafo(int n) {
 		for (int j = 0; j<n; j++) {
 			Vertice v;
 			v.setNumero(j);
-			v.setPeso(0);
+			v.setPeso(99999);
+			v.setAntecessor(-1);
+			v.setChave(9999);
 			this->MatrixDeAdjacencia[i].push_back(v);
 			this->MatrixDeAdjacenciaDoPrim[i].push_back(v);
 		}
@@ -82,31 +131,43 @@ float Grafo::GetPesoMatrixAdjacenciaPrim(int inicio, int fim) {
 Vertice Grafo::GetVerticeMatrixAdjacencia(int u, int v) {
 	return this->MatrixDeAdjacencia[u][v];
 }
+
+
 Vertice Grafo::GetVerticeMatrixAdjacenciaDoPrim(int u, int v) {
 	return this->MatrixDeAdjacenciaDoPrim[u][v];
 }
-class heap_min_priority_queue
-{
-private:
-	int heap_size;
-	int infinite;
-	Vertice Queue[51];
-	int Parent(int i);
-	int Left(int i);
-	int Right(int i);
 
-public:
-	heap_min_priority_queue();
-	void build_min_heap();
-	void Min_heapify(int i);
-	void Insert(Vertice);
-	Vertice Minimum();
-	Vertice Extract_min();
-	bool Decrease_key(int i, int key);
-	void Increase_Priority(int value, int key);
-	bool isEmpty();
-	bool isQueued(Vertice);
-};
+void Grafo::Prim(Grafo grafo, int raiz, int ordem){
+
+	heap_min_priority_queue Q;
+	Vertice v,u;
+	int antaux=0,l=0;
+	vector<int>parada;
+	float peso=0, pesoaux=99999;
+	for(int i=0;i<ordem;i++){
+		MatrixDeAdjacencia[i][raiz-1].setChave(0);
+	}
+	for(int i;i<ordem;i++){
+		Q.Insert(MatrixDeAdjacencia[0][i]);
+	}
+
+	while(Q.isEmpty()!=true){
+		u=Q.Extract_min();
+		for(int i=0;i<ordem;i++){
+			v=grafo.GetVerticeMatrixAdjacencia(u.getNumero(),i);
+			if((Q.isQueued(v)==true)&&(this->MatrixDeAdjacencia[u.getNumero()][v.getNumero()].getPeso()<v.getChave())){
+				v.setAntecessor(u.getNumero());
+				v.setChave(this->MatrixDeAdjacencia[u.getNumero()][v.getNumero()].getPeso());
+				peso+=v.getChave();
+			}
+		}
+
+
+	}
+	cout<<"peso: "<<peso<<endl;
+
+}
+
 bool heap_min_priority_queue::isQueued(Vertice v)
 {
 	for (int i = 1 ; i <= heap_size ; i++)
@@ -174,7 +235,7 @@ void heap_min_priority_queue::Insert(Vertice vertice)
 	//aumenta a quantidade de itens na fila
 	heap_size++;
 
-	//indice 0 é a key
+	//indice 0 Ã© a key
 	Queue[heap_size] = vertice;
 
 	Decrease_key(heap_size, vertice.getPeso());
@@ -272,49 +333,19 @@ int heap_min_priority_queue::Right(int i)
 };
 int main()
 {
-	int tt;
-	Vertice v[6];
-
-	v[1].setNumero(1);
-	v[2].setNumero(2);
-	v[3].setNumero(3);
-	v[4].setNumero(4);
-	v[5].setNumero(5);
-
-	v[1].setPeso(10);
-	v[2].setPeso(2);
-	v[3].setPeso(1);
-	v[4].setPeso(5);
-	v[5].setPeso(4);
-
-	heap_min_priority_queue fila;
-	Vertice vertice;
-
-	for (int i = 1; i < 6; i++)
-	{
-		fila.Insert(v[i]);
+	int ordem, tamanho, raiz, v1, v2;
+	float peso;
+	cout<<"Ordem e tamanho"<<endl;
+	cin>>ordem>>tamanho;
+	Grafo graph(ordem);
+	for(int i=0;i<tamanho;i++){
+		cout<<"v1, v2, peso: "<<i<<endl;
+		cin>>v1>>v2>>peso;
+		graph.InserirPeso(v1-1,v2-1,peso);
 	}
-	for (int i = 1; i < 6; i++)
-	{
-		
-		vertice = fila.Extract_min();
-		cout << vertice.getNumero() << ", " << vertice.getPeso() << endl;
-		cout << "fila vazia? " << fila.isEmpty() << endl;
-		cout << "vertice 4 tah na fila? " << fila.isQueued(v[4]) << endl;
-	}
+	cout<<"raiz"<<endl;
+	cin>>raiz;
+	graph.Prim(graph, raiz, ordem);
 
-
-	Grafo graph(10);
-	Vertice v1, v2;
-	graph.InserirPeso(5, 6, 22.5);
-	v1 = graph.GetVerticeMatrixAdjacencia(5, 6);
-	v2 = graph.GetVerticeMatrixAdjacencia(6, 5);
-	cout << "O peso de v1 eh: " << v1.getPeso() << "O numero de v1 eh :" << v1.getNumero() << "\n";
-	cout << "O peso de v2 eh: " << v2.getPeso() << "O numero de v2 eh :" << v2.getNumero();
-
-	//para segurar o console
-	cin >> tt;
-	// 3, 2, 5, 4, 1
 	return 0;
 }
-
