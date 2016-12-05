@@ -2,6 +2,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include<vector>
+#include<stdio.h>
 using namespace std;
 
 class Vertice
@@ -145,13 +146,13 @@ float Grafo::Prim(Grafo grafo, int raiz, int ordem) {
 	float peso = 0;
 	vector<Vertice>parada(ordem);
 	u.setChave(0);
-	u.setNumero(raiz-1);
+	u.setNumero(raiz);
 	Q.Insert(u);
-	parada[raiz-1].setAntecessor(0);
-	parada[raiz-1].setPeso(0);
+	parada[raiz].setAntecessor(0);
+	parada[raiz].setPeso(0);
 	for (i = 0; i<ordem; i++) {
 		u.setChave(99999);
-		if(i!=raiz-1){
+		if(i!=raiz){
 			u.setNumero(i);
 			parada[i].setAntecessor(-1);
 			parada[i].setChave(999999);
@@ -349,19 +350,21 @@ int main()
 {
 
 	int ordem, tamanho, raiz, v1, v2;
-	float peso;
-	cout << "Ordem e tamanho" << endl;
+		float peso,MST;
+	//cout << "Ordem e tamanho" << endl;
 	cin >> ordem >> tamanho;
 	Grafo graph(ordem);
+	//cout<<"Criou Graafo";
 	for (int i = 0; i<tamanho; i++) {
-		cout << "v1, v2, peso: " << i << endl;
+		//cout << "v1, v2, peso: " << i << endl;
 		cin >> v1 >> v2 >> peso;
-		graph.InserirPeso(v1 - 1, v2 - 1, peso);
+		graph.InserirPeso(v1, v2, peso);
 	}
-	cout << "raiz" << endl;
+	//cout << "raiz" << endl;
 	cin >> raiz;
-	cout<<"peso: "<<graph.Prim(graph, raiz, ordem)<<endl;
-
+	MST=graph.Prim(graph, raiz, ordem);
+	printf("%.2f",MST);
+	//cout<<"Fex o prim";
 	/*heap_min_priority_queue fila;
 	Vertice v1, v2, v3, u;
 	v1.setNumero(1);
